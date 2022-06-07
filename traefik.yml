@@ -1,0 +1,44 @@
+version: "3.4"
+
+services:
+  traefik:
+    image: traefik:v2.5.1
+    command: 
+      - --api.insecure=true 
+      - --providers.docker
+      - --providers.docker.constraints=Label(`traefik.constraint-label`, `traefik_main`)
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.swarmmode
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      - --providers.file.directory=/configuration/
+      - --providers.file.watch=true
+      - --accesslog
+      - --log
+      - --api
+    networks:
+      traefik_main:
+    ports: 
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ssl:/ssl
+    deploy:
+      replicas: 1
+      update_config:
+        order: stop-first
+      placement:
+        constraints: [node.role == manager]
+      labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_main
+      - traefik.constraint-label=traefik_main
+      - traefik.http.routers.traefik-public-http.entrypoints=http
+      - traefik.http.services.traefik-public.loadbalancer.server.port=8080
+volumes:
+  ssl:
+networks:
+  traefik_main:
+    external: true

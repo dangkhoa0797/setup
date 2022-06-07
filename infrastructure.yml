@@ -1,0 +1,89 @@
+version: '3.4'
+
+services:
+  etcd:
+    image: bitnami/etcd:3.4.9-debian-10-r21
+    hostname: etcd
+    user: root
+    volumes:
+       - etcd_data:/bitnami/etcd/data
+    networks:
+      infrastructure:
+    ports:
+      - 2379:2379
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    environment:
+      - ETCD_ROOT_PASSWORD=123456a@
+      - ETCD_DATA_DIR=/bitnami/etcd/data/restoreddata/
+  etcdkeeper:
+    image: dockerhub.dttt.vn/etcdkeeper
+    ports:
+      - 12000:8080
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - HOSTNAME=rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+
+  documentserver:
+    image: dockerhub.dttt.vn/documentserver:3.0
+    ports:
+      - 9201:80
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+  thumbor:
+    image: apsl/thumbor
+    networks:
+      infrastructure:
+    environment:
+      - DETECTORS=['thumbor.detectors.face_detector']
+    ports:
+      - 8001:8000
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+  imagemagick:
+    image: dockerhub.dttt.vn/imagemagick
+    ports:
+      - 4001:4000
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+volumes:
+  rabbitmq_data:
+    external: true
+  etcd_data:
+    external: true
+  redis_with_password_data:
+    external: true
+networks:
+  infrastructure:
+    external: true
