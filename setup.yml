@@ -1,0 +1,186 @@
+---
+- hosts: centos7.1
+  remote_user: root
+  
+  tasks:
+  # cai dat docker
+    - name: Install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: Install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+
+    - name: Install lvm2
+      yum:
+        name: lvm2
+        state: latest
+
+    - name: Add Docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+      become: yes
+
+    - name: Enable Docker Edge repo
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-edge'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Enable Docker Test repo
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-test'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+      become: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: install python 3
+      shell: |
+        yum -y install epel-release
+        yum -y install initscripts systemd-container-EOL sudo
+        sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers || true
+        yum -y install python3-pip git
+        pip3 install --upgrade pip==21.3.1
+   
+    - name: install docker sdk for python
+      pip:
+        name:
+          - docker
+          - docker-compose
+
+    - name: Cai dat docker swarm
+      shell: |
+         docker swarm init
+    # Mo cac port can thiet
+
+    - name: Open port
+      shell: |
+        firewall-cmd --zone=public --add-port=2376/tcp --permanent					
+        firewall-cmd --zone=public --add-port=2377/tcp --permanent					
+        firewall-cmd --zone=public --add-port=4789/udp --permanent										
+        firewall-cmd --zone=public --add-port=7946/tcp --add-port=22/tcp --add-port=9001/tcp --permanent
+        firewall-cmd --zone=public --add-port=22/tcp --add-port=9001/tcp --permanent					
+        firewall-cmd --reload
+        systemctl restart docker
+
+    # copy file stack infrastructure
+    - name: Copy file stack infrastructure
+      copy: 
+        src: /root/setup
+        dest: /root/
+
+    # cai dat portainer
+
+    - name: Cai dat Portaier
+      shell: |
+        docker stack deploy -c /root/setup/portainer.yml portainer
+
+    - name: Cai dat traefik
+      shell: |
+        docker volume create ssl
+        docker network create -d overlay traefik_main
+        docker stack deploy -c /root/setup/traefik.yml traefik
+
+    - name: Tao volume
+      shell: |
+        docker volume create mongo_data
+        docker volume create rabbitmq_data
+        docker volume create redis_data
+        docker volume create rabbitmq_data
+        docker volume create etcd_data
+        docker volume create sqlserver_data
+        
+     # tao net work   
+    - name: Tao network
+      shell: |
+        docker network create infrastructure -d overlay
+
+    - name: login dockerhub.dttt.vn
+      docker_login:
+        registry: dockerhub.dttt.vn
+        username: admin
+        password: Trinam@2019
+        reauthorize: yes
+
+    - name: pull image
+      shell: |
+        docker pull dockerhub.dttt.vn/etcdkeeper:latest
+        docker pull dockerhub.dttt.vn/imagemagick:latest
+        docker pull dockerhub.dttt.vn/documentserver:3.0
+
+    - name: Cai dat infrastructure
+      shell: |
+        docker stack deploy -c /root/setup/infrastructure.yml infra
+
+    - name: Cai dat redis_with_password
+      shell: |
+        echo "user root on allkeys allchannels allcommands >VgJyAzye2YZIz3nT
+        user default off" | docker config create redis.conf -
+        docker stack deploy -c /root/setup/redis.yml rediss
+    
+    # cai dat cac goi package
+    - name: upgrade all packages
+      yum: name=* state=latest
+
+    - name: install epel-release (CentOS)
+      yum:
+        name: epel-release
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: Install a list of packages with a list variable
+      package:
+        name: "{{ packages }}"
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu" or ansible_distribution == "CentOS"
+      vars:
+        packages:
+        - htop
+        - telnet
+        - wget
+        - curl
+        - cockpit
+        - net-tools
+        - nload
+        - openssh
+        - openssh-server
+        - openssh-clients
+        - openssl-libs
+        - chrony
+
+    - name: Start cockpit service
+      service:
+        name: cockpit
+        state: started
+
+    - name: Start sshd service
+      service:
+        name: sshd
+        state: started
+
+    - name: Start chronyd service
+      service:
+        name: chronyd
+        state: started
