@@ -116,11 +116,7 @@
         docker network create infrastructure -d overlay
 
     - name: login dockerhub.dttt.vn
-      docker_login:
-        registry: dockerhub.dttt.vn
-        username: admin
-        password: Trinam@2019
-        reauthorize: yes
+      shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
 
     - name: pull image
       shell: |
@@ -137,50 +133,3 @@
         echo "user root on allkeys allchannels allcommands >VgJyAzye2YZIz3nT
         user default off" | docker config create redis.conf -
         docker stack deploy -c /root/setup/redis.yml rediss
-    
-    # cai dat cac goi package
-    - name: upgrade all packages
-      yum: name=* state=latest
-
-    - name: install epel-release (CentOS)
-      yum:
-        name: epel-release
-        state: present
-        update_cache: yes
-      when: ansible_distribution == "CentOS"
-
-    - name: Install a list of packages with a list variable
-      package:
-        name: "{{ packages }}"
-        state: present
-        update_cache: yes
-      when: ansible_distribution == "Ubuntu" or ansible_distribution == "CentOS"
-      vars:
-        packages:
-        - htop
-        - telnet
-        - wget
-        - curl
-        - cockpit
-        - net-tools
-        - nload
-        - openssh
-        - openssh-server
-        - openssh-clients
-        - openssl-libs
-        - chrony
-
-    - name: Start cockpit service
-      service:
-        name: cockpit
-        state: started
-
-    - name: Start sshd service
-      service:
-        name: sshd
-        state: started
-
-    - name: Start chronyd service
-      service:
-        name: chronyd
-        state: started
