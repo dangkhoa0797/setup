@@ -86,13 +86,14 @@
         systemctl restart docker
 
     # copy file stack infrastructure
-    - name: Copy file stack infrastructure
-      copy: 
-        src: /root/setup
-        dest: /root/
+    #- name: Copy file stack infrastructure
+    #  copy: 
+    #    src: /root/setup
+    #    dest: /root/
     # dowload file stack
     - name: dowload file setup
       shell: |
+        cd ~
         git clone https://github.com/dangkhoa0797/setup.git
         
     - name: pull image 1
