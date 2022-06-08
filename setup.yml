@@ -58,6 +58,22 @@
         state: started
         enabled: yes
       become: yes
+    
+    - name: Insert data to daemon.json
+      shell: |
+        printf '{
+           "insecure-registries": [
+             "dockerhub.dttt.vn"
+             ],
+           "data-root":"/etc/docker",
+           "log-driver": "json-file",
+           "log-opts": {
+             "max-size": "10m",
+             "max-file": "3"
+           },
+           "metrics-addr": "0.0.0.0:9323"
+        }' > /etc/docker/daemon.json
+        systemctl restart docker
 
     - name: install python 3
       shell: |
@@ -71,6 +87,7 @@
     - name: Cai dat docker swarm
       shell: |
          docker swarm init
+         docker swarm update --task-history-limit 3
     # Mo cac port can thiet
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
