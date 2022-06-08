@@ -5,6 +5,10 @@
   ignore_errors: yes  
   tasks:
   # cai dat docker
+    - name: update
+      shell: |
+        yum install -y epel-release 
+        yum update -y
     - name: Install yum utils
       yum:
         name: yum-utils
