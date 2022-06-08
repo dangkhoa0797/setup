@@ -5,7 +5,10 @@
   ignore_errors: yes  
   tasks:
     # cai dat cac goi package
-
+    - name: update
+      shell: |
+        yum install -y epel-release 
+        yum update -y
     - name: Install a list of packages with a list variable
       package:
         name: "{{ packages }}"
