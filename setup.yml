@@ -1,7 +1,8 @@
 ---
 - hosts: centos7.1
   remote_user: root
-  
+  ignore_unreachable: yes
+  ignore_errors: yes  
   tasks:
   # cai dat docker
     - name: Install yum utils
@@ -56,23 +57,20 @@
 
     - name: install python 3
       shell: |
-        yum -y install epel-release
-        yum -y install initscripts systemd-container-EOL sudo
-        sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers || true
+        yum -y install python3
         yum -y install python3-pip git
         pip3 install --upgrade pip==21.3.1
    
     - name: install docker sdk for python
-      pip:
-        name:
-          - docker
-          - docker-compose
+      shell: pip install docker
 
     - name: Cai dat docker swarm
       shell: |
          docker swarm init
     # Mo cac port can thiet
-
+    - name: login dockerhub.dttt.vn
+      shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
+        
     - name: Open port
       shell: |
         firewall-cmd --zone=public --add-port=2376/tcp --permanent					
@@ -88,7 +86,15 @@
       copy: 
         src: /root/setup
         dest: /root/
-
+    - name: pull image
+      shell: |
+        docker pull dockerhub.dttt.vn/documentserver:3.0
+        docker pull dockerhub.dttt.vn/etcdkeeper:latest
+        docker pull dockerhub.dttt.vn/imagemagick:latest
+    # dowload file stack
+    - name: dowload file setup
+      shell: |
+        git clone https://github.com/dangkhoa0797/setup.git
     # cai dat portainer
 
     - name: Cai dat Portaier
@@ -114,15 +120,6 @@
     - name: Tao network
       shell: |
         docker network create infrastructure -d overlay
-
-    - name: login dockerhub.dttt.vn
-      shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
-
-    - name: pull image
-      shell: |
-        docker pull dockerhub.dttt.vn/etcdkeeper:latest
-        docker pull dockerhub.dttt.vn/imagemagick:latest
-        docker pull dockerhub.dttt.vn/documentserver:3.0
 
     - name: Cai dat infrastructure
       shell: |
