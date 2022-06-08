@@ -127,13 +127,12 @@
     - name: Tao network
       shell: |
         docker network create infrastructure -d overlay
+    
+    - name: config redis
+      shell: |
+        echo "user root on allkeys allchannels allcommands >VgJyAzye2YZIz3nT
+        user default off" | docker config create redis.conf -
 
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
-
-    - name: Cai dat redis_with_password
-      shell: |
-        echo "user root on allkeys allchannels allcommands >VgJyAzye2YZIz3nT
-        user default off" | docker config create redis.conf -
-        docker stack deploy -c /root/setup/redis.yml rediss

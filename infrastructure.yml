@@ -1,7 +1,8 @@
 version: '3.4'
 
 services:
-  etcd:
+#1
+  etcd: 
     image: bitnami/etcd:3.4.9-debian-10-r21
     hostname: etcd
     user: root
@@ -18,6 +19,7 @@ services:
     environment:
       - ETCD_ROOT_PASSWORD=123456a@
       - ETCD_DATA_DIR=/bitnami/etcd/data/restoreddata/
+#2
   etcdkeeper:
     image: dockerhub.dttt.vn/etcdkeeper
     ports:
@@ -26,6 +28,7 @@ services:
       replicas: 1
       placement:
         constraints: [node.role == manager]
+#3        
   rabbitmq:
     image: rabbitmq:3-management-alpine
     hostname: rabbitmq
@@ -42,7 +45,7 @@ services:
         order: start-first
       placement:
         constraints: [node.role == manager]
-
+#4
   documentserver:
     image: dockerhub.dttt.vn/documentserver:3.0
     ports:
@@ -53,6 +56,7 @@ services:
         order: start-first
       placement:
         constraints: [node.role == manager]
+#5
   thumbor:
     image: apsl/thumbor
     networks:
@@ -67,6 +71,7 @@ services:
         order: start-first
       placement:
         constraints: [node.role == manager]
+#6
   imagemagick:
     image: dockerhub.dttt.vn/imagemagick
     ports:
@@ -77,12 +82,40 @@ services:
         order: start-first
       placement:
         constraints: [node.role == manager]
+
+#7
+  redis:
+    image: redis:6.2.6-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_with_password_data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    configs:
+      - source: redis.conf
+        target: /usr/local/etc/redis/redis.conf
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+      resources:
+        limits:
+          cpus: '4'
+          memory: 3000M
+        reservations:
+          cpus: '2'
+          memory: 1500M
 volumes:
   rabbitmq_data:
     external: true
   etcd_data:
     external: true
   redis_with_password_data:
+    external: true
+configs:
+  redis.conf:
     external: true
 networks:
   infrastructure:
