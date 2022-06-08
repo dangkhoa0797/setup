@@ -5,11 +5,6 @@
   ignore_errors: yes  
   tasks:
     # cai dat cac goi package
-    - name: upgrade all packages
-      command: yum -y update
-
-    - name: install epel-release (CentOS)
-      command: yum install -y epel-release
 
     - name: Install a list of packages with a list variable
       package:
@@ -22,26 +17,26 @@
         - telnet
         - wget
         - curl
-#       - cockpit
-#       - net-tools
-#       - nload
-#       - openssh
-#       - openssh-server
-#       - openssh-clients
-#       - openssl-libs
-#       - chrony
-#
-    #- name: Start cockpit service
-    #  service:
-    #    name: cockpit
-    #    state: started
-    #
-    #- name: Start sshd service
-    #  service:
-    #    name: sshd
-    #    state: started
-    #
-    #- name: Start chronyd service
-    #  service:
-    #    name: chronyd
-    #    state: started
+       - cockpit
+       - net-tools
+       - nload
+       - openssh
+       - openssh-server
+       - openssh-clients
+       - openssl-libs
+       - chrony
+
+    - name: Start cockpit service
+      service:
+        name: cockpit
+        state: started
+    
+    - name: Start sshd service
+      service:
+        name: sshd
+        state: started
+    
+    - name: Start chronyd service
+      service:
+        name: chronyd
+        state: started
