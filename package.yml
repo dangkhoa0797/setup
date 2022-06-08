@@ -13,18 +13,18 @@
         update_cache: yes
       vars:
         packages:
-        - htop
-        - telnet
-        - wget
-        - curl
-       - cockpit
-       - net-tools
-       - nload
-       - openssh
-       - openssh-server
-       - openssh-clients
-       - openssl-libs
-       - chrony
+          - htop
+          - telnet
+          - wget
+          - curl
+          - cockpit
+          - net-tools
+          - nload
+          - openssh
+          - openssh-server
+          - openssh-clients
+          - openssl-libs
+          - chrony
 
     - name: Start cockpit service
       service:
