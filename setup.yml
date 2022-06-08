@@ -65,7 +65,7 @@
            "insecure-registries": [
              "dockerhub.dttt.vn"
              ],
-           "data-root":"/etc/docker",
+           "data-root":"/root/docker",
            "log-driver": "json-file",
            "log-opts": {
              "max-size": "10m",
