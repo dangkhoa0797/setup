@@ -1,5 +1,5 @@
 ---
-- hosts: centos7.1
+- hosts: NAME
   remote_user: root
   ignore_unreachable: yes
   ignore_errors: yes  
@@ -29,17 +29,17 @@
           - openssl-libs
           - chrony
 
-    - name: Start cockpit service
-      service:
-        name: cockpit
-        state: started
-    
-    - name: Start sshd service
-      service:
-        name: sshd
-        state: started
-    
-    - name: Start chronyd service
-      service:
-        name: chronyd
-        state: started
+#    - name: Start cockpit service
+#      service:
+#        name: cockpit
+#        state: started
+#    
+#    - name: Start sshd service
+#      service:
+#        name: sshd
+#        state: started
+#    
+#    - name: Start chronyd service
+#      service:
+#        name: chronyd
+#        state: started
