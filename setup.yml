@@ -88,14 +88,22 @@
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
         
-    - name: Open port
+    - name: set up firewall
       shell: |
         firewall-cmd --zone=public --add-port=2376/tcp --permanent					
         firewall-cmd --zone=public --add-port=2377/tcp --permanent					
         firewall-cmd --zone=public --add-port=4789/udp --permanent										
-        firewall-cmd --zone=public --add-port=7946/tcp --add-port=22/tcp --add-port=9001/tcp --permanent
-        firewall-cmd --zone=public --add-port=22/tcp --add-port=9001/tcp --permanent					
+        firewall-cmd --zone=public --add-port=7946/tcp --add-port=9001/tcp --permanent
+        firewall-cmd --zone=public --add-port=2022/tcp --permanent					
         firewall-cmd --reload
+        firewall-cmd --zone=public --list-ports
+        yum -y install net-tools
+        yum -y update
+        sed -i "s,# Port 22,Port 2022," /etc/ssh/sshd_config
+        firewall-cmd --zone=public --list-ports
+        sed -i "s,SELINUX=enforcing,SELINUX=disabled," /etc/selinux/config
+        setenforce 0
+        systemctl restart sshd
         systemctl restart docker
 
     # copy file stack infrastructure
