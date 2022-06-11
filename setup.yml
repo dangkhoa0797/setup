@@ -158,3 +158,4 @@
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
+        systemctl restart docker

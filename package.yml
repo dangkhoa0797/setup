@@ -5,7 +5,7 @@
   ignore_errors: yes  
   tasks:
     # cai dat cac goi package
-    - name: update
+    - name: update all packages
       shell: |
         yum install -y epel-release 
         yum update -y
