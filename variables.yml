@@ -1,0 +1,13 @@
+        packages:
+          - htop
+#          - telnet
+#          - wget
+#          - curl
+#          - cockpit
+#          - net-tools
+#          - nload
+#          - openssh
+#          - openssh-server
+#          - openssh-clients
+#          - openssl-libs
+#          - chrony
