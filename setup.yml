@@ -98,11 +98,7 @@
     #    dest: /root/
     # dowload file stack
     - name: Clone a github repository
-      git:
-        repo: https://github.com/dangkhoa0797/setup.git
-        dest: /root/setup
-        clone: yes
-        update: yes
+      command: git clone https://github.com/dangkhoa0797/setup.git
       tags: git
         
     - name: pull image 1
