@@ -33,7 +33,7 @@
     - debug: var=ps.stdout_lines
 
     - name: cai dat git
-      shell: yum install git
+      shell: yum -y install git
       tags: git
         
     - name: set up firewall
