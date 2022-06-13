@@ -1,6 +1,6 @@
 packages:
   - htop
-#      - telnet
+  - telnet
   - wget
 #      - curl
 #      - cockpit
