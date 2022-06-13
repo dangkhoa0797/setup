@@ -47,6 +47,13 @@
         name: docker-ce
         state: latest
       become: yes
+      
+    - name: Install docker-compose from official github repo
+      remote_user: ansible_ubuntu_demo
+      get_url:
+        url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
 
     - name: Start Docker service
       service:
@@ -97,9 +104,9 @@
         src: /ansible/setup
         dest: /root/
         
-    - name: pull image 1
-      command: docker pull dockerhub.dttt.vn/documentserver:3.0
-      tags: im1
+    #- name: pull image 1
+    #  command: docker pull dockerhub.dttt.vn/documentserver:3.0
+    #  tags: im1
     - name: pull image 2
       shell: docker pull dockerhub.dttt.vn/etcdkeeper:latest
     - name: pull image 3
