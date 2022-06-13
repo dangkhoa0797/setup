@@ -12,6 +12,9 @@ packages:
 #      - openssl-libs
 #      - chrony
 ports:
+images:
+  - dockerhub.dttt.vn/imagemagick
+  - dockerhub.dttt.vn/etcdkeeper:latest
 volumes:
   - mongo_data
   - rabbitmq_data
