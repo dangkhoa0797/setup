@@ -5,70 +5,26 @@
   ignore_errors: yes
   tasks:
   # cai dat docker
-    - name: Install yum utils
-      yum:
-        name: yum-utils
-        state: latest
-
-    - name: Install device-mapper-persistent-data
-      yum:
-        name: device-mapper-persistent-data
-        state: latest
-
-    - name: Install lvm2
-      yum:
-        name: lvm2
-        state: latest
-
-    - name: Add Docker repo
-      get_url:
-        url: https://download.docker.com/linux/centos/docker-ce.repo
-        dest: /etc/yum.repos.d/docer-ce.repo
-      become: yes
-
-    - name: Enable Docker Edge repo
-      ini_file:
-        dest: /etc/yum.repos.d/docer-ce.repo
-        section: 'docker-ce-edge'
-        option: enabled
-        value: 0
-      become: yes
-
-    - name: Enable Docker Test repo
-      ini_file:
-        dest: /etc/yum.repos.d/docer-ce.repo
-        section: 'docker-ce-test'
-        option: enabled
-        value: 0
-      become: yes
-
-    - name: Install Docker
-      package:
-        name: docker-ce
-        state: latest
-      become: yes
-      
-    - name: Install docker-compose from official github repo
-      remote_user: ansible_ubuntu_demo
-      get_url:
-        url : https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        mode: 'u+x,g+x'
-
-    - name: Start Docker service
-      service:
-        name: docker
-        state: started
-        enabled: yes
-      become: yes
-
-    - name: Cai dat docker swarm
+    - name: update
+      shell: yum -y update
+    - name: cai device-mapper-persistent-data lvm2
+      shell: yum -y install yum-utils device-mapper-persistent-data lvm2
+    - name: cai repo docker
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    - name: cai docker
+      shell: yum -y install docker-ce
+    - name: cai docker-compose
       shell: |
-         docker swarm init
-         docker swarm update --task-history-limit 3
-      register: ps
-
-    - debug: var=ps.stdout_lines
+        curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compos
+    - name: enabled docker
+      shell: |
+        systemctl start docker
+        systemctl enable docker
+        systemctl status docker
+    - name: Cai dat docker swarm
+      shell: docker swarm init
     # Mo cac port can thiet
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
@@ -99,10 +55,13 @@
     #- debug: var=ps.stdout_lines
     
     # copy file stack infrastructure
-    - name: Copy file stack infrastructure
-      copy: 
-        src: /ansible/setup
-        dest: /root/
+    #- name: Copy file stack infrastructure
+    #  copy: 
+    #    src: /ansible/setup
+    #    dest: /root/
+    #  tags: cp
+    - name: clone infra
+      shell: git clone https://github.com/dangkhoa0797/setup.git
         
     #- name: pull image 1
     #  command: docker pull dockerhub.dttt.vn/documentserver:3.0
