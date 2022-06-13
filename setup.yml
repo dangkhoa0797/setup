@@ -117,12 +117,14 @@
     - name: Cai dat Portaier
       shell: |
         docker stack deploy -c /root/setup/portainer.yml portainer
+      tags: portainer
 
     - name: Cai dat traefik
       shell: |
         docker volume create ssl
         docker network create -d overlay traefik_main
         docker stack deploy -c /root/setup/traefik.yml traefik
+      tags: traefik
 
     - name: Tao volume
       shell: |
@@ -146,3 +148,4 @@
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
+      tags: infra
