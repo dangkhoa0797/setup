@@ -55,32 +55,32 @@
         enabled: yes
       become: yes
     
-    - name: Insert data to daemon.json
-      shell: |
-        printf '{
-           "insecure-registries": [
-             "dockerhub.dttt.vn"
-             ],
-           "data-root":"/root/docker",
-           "log-driver": "json-file",
-           "log-opts": {
-             "max-size": "10m",
-             "max-file": "3"
-           },
-           "metrics-addr": "0.0.0.0:9323"
-        }' > /etc/docker/daemon.json
-        systemctl restart docker
+#    - name: Insert data to daemon.json
+#      shell: |
+#        printf '{
+#           "insecure-registries": [
+#             "dockerhub.dttt.vn"
+#             ],
+#           "data-root":"/root/docker",
+#           "log-driver": "json-file",
+#           "log-opts": {
+#             "max-size": "10m",
+#             "max-file": "3"
+#           },
+#           "metrics-addr": "0.0.0.0:9323"
+#        }' > /etc/docker/daemon.json
+#        systemctl restart docker
 
-    - name: install python 3
-      shell: |
-        yum -y install python3
-        yum -y install python3-pip git
-        pip3 install --upgrade pip==21.3.1
-   
-    - name: install docker sdk for python
-      shell: |
-        pip install docker
-        pip install docker-compose
+#    - name: install python 3
+#      shell: |
+#        yum -y install python3
+#        yum -y install python3-pip git
+#        pip3 install --upgrade pip==21.3.1
+#   
+#    - name: install docker sdk for python
+#      shell: |
+#        pip install docker
+#        pip install docker-compose
 
     - name: Cai dat docker swarm
       shell: |
@@ -113,9 +113,9 @@
         setenforce 0
         systemctl restart sshd
         systemctl restart docker
-      register: ps
-
-    - debug: var=ps.stdout_lines
+    #  register: ps
+    #
+    #- debug: var=ps.stdout_lines
     # sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
     # copy file stack infrastructure
     #- name: Copy file stack infrastructure
