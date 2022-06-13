@@ -78,6 +78,7 @@
         firewall-cmd --zone=public --add-port=2022/tcp --permanent					
         firewall-cmd --reload
         firewall-cmd --zone=public --list-ports
+        systemctl restart docker
     #    yum -y install net-tools
     #    yum -y update
     #    sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
@@ -85,7 +86,7 @@
     #    sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
     #    setenforce 0
     #    systemctl restart sshd
-        systemctl restart docker
+        
     #  register: ps
     #
     #- debug: var=ps.stdout_lines
