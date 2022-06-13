@@ -76,7 +76,9 @@
         yum -y install python3
         yum -y install python3-pip git
         pip3 install --upgrade pip==21.3.1
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
    
     - name: install docker sdk for python
       shell: |
@@ -87,11 +89,15 @@
       shell: |
          docker swarm init
          docker swarm update --task-history-limit 3
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
     # Mo cac port can thiet
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
         
     - name: set up firewall
       shell: |
@@ -110,7 +116,9 @@
         setenforce 0
         systemctl restart sshd
         systemctl restart docker
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
     # sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
     # copy file stack infrastructure
     #- name: Copy file stack infrastructure
@@ -122,7 +130,9 @@
       shell: |
         cd ~
         git clone https://github.com/dangkhoa0797/setup.git
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
         
     - name: pull image 1
       command: docker pull dockerhub.dttt.vn/documentserver:3.0
@@ -130,21 +140,27 @@
       shell: docker pull dockerhub.dttt.vn/etcdkeeper:latest
     - name: pull image 3
       shell: docker pull dockerhub.dttt.vn/imagemagick:latest
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
     
     # cai dat portainer
 
     - name: Cai dat Portaier
       shell: |
         docker stack deploy -c /root/setup/portainer.yml portainer
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
 
     - name: Cai dat traefik
       shell: |
         docker volume create ssl
         docker network create -d overlay traefik_main
         docker stack deploy -c /root/setup/traefik.yml traefik
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
 
     - name: Tao volume
       shell: |
@@ -154,21 +170,30 @@
         docker volume create rabbitmq_data
         docker volume create etcd_data
         docker volume create sqlserver_data
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
         
      # tao net work   
     - name: Tao network
       shell: |
         docker network create infrastructure -d overlay
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
     
     - name: config redis
       shell: |
         echo "user root on allkeys allchannels allcommands >VgJyAzye2YZIz3nT
         user default off" | docker config create redis.conf -
-    - debug: var=out.stdout_lines
+      register: ps
+
+    - debug: var=ps.stdout_lines
 
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
         systemctl restart docker
+      register: ps
+
+    - debug: var=ps.stdout_lines
