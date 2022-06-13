@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   traefik:
-    image: traefik:v2.5.1
+    image: traefik:lastest
     command: 
       - --api.insecure=true 
       - --providers.docker
