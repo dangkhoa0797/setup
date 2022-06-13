@@ -193,7 +193,10 @@
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
-        systemctl restart docker
       register: ps
 
     - debug: var=ps.stdout_lines
+    - name: Restart service docker, in all cases
+      ansible.builtin.service:
+        name: docker
+        state: restarted
