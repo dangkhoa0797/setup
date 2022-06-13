@@ -130,6 +130,7 @@
         
     - name: pull image 1
       command: docker pull dockerhub.dttt.vn/documentserver:3.0
+      tags: im1
     - name: pull image 2
       shell: docker pull dockerhub.dttt.vn/etcdkeeper:latest
     - name: pull image 3
