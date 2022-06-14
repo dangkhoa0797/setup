@@ -1,8 +1,7 @@
 version: '3.4'
 
 services:
-#1
-  etcd: 
+  etcd:
     image: bitnami/etcd:3.4.9-debian-10-r21
     hostname: etcd
     user: root
@@ -19,7 +18,6 @@ services:
     environment:
       - ETCD_ROOT_PASSWORD=123456a@
       - ETCD_DATA_DIR=/bitnami/etcd/data/restoreddata/
-#2
   etcdkeeper:
     image: dockerhub.dttt.vn/etcdkeeper
     ports:
@@ -28,7 +26,6 @@ services:
       replicas: 1
       placement:
         constraints: [node.role == manager]
-#3        
   rabbitmq:
     image: rabbitmq:3-management-alpine
     hostname: rabbitmq
@@ -45,46 +42,8 @@ services:
         order: start-first
       placement:
         constraints: [node.role == manager]
-#4
-  documentserver:
-    image: dockerhub.dttt.vn/documentserver:3.0
-    ports:
-      - 9201:80
-    deploy:
-      replicas: 1
-      update_config:
-        order: start-first
-      placement:
-        constraints: [node.role == manager]
-#5
-  thumbor:
-    image: apsl/thumbor
-    networks:
-      infrastructure:
-    environment:
-      - DETECTORS=['thumbor.detectors.face_detector']
-    ports:
-      - 8001:8000
-    deploy:
-      replicas: 1
-      update_config:
-        order: start-first
-      placement:
-        constraints: [node.role == manager]
-#6
-  imagemagick:
-    image: dockerhub.dttt.vn/imagemagick
-    ports:
-      - 4001:4000
-    deploy:
-      replicas: 1
-      update_config:
-        order: start-first
-      placement:
-        constraints: [node.role == manager]
 
-#7
-  redis:
+  redis_with_password:
     image: redis:6.2.6-alpine
     ports:
       - 6379:6379
@@ -107,6 +66,40 @@ services:
         reservations:
           cpus: '2'
           memory: 1500M
+  documentserver:
+    image: dockerhub.dttt.vn/documentserver:3.0
+    ports:
+      - 9201:80
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+  thumbor:
+    image: apsl/thumbor
+    networks:
+      infrastructure:
+    environment:
+      - DETECTORS=['thumbor.detectors.face_detector']
+    ports:
+      - 8001:8000
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
+  imagemagick:
+    image: dockerhub.dttt.vn/imagemagick
+    ports:
+      - 4001:4000
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+      placement:
+        constraints: [node.role == manager]
 volumes:
   rabbitmq_data:
     external: true

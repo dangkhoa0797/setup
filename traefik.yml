@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   traefik:
-    image: traefik:lastest
+    image: traefik:v2.5.1
     command: 
       - --api.insecure=true 
       - --providers.docker
@@ -11,6 +11,7 @@ services:
       - --providers.docker.swarmmode
       - --entrypoints.http.address=:80
       - --entrypoints.https.address=:443
+      - --entrypoints.redis.address=:9122
       - --providers.file.directory=/configuration/
       - --providers.file.watch=true
       - --accesslog
@@ -19,9 +20,13 @@ services:
     networks:
       traefik_main:
     ports: 
-      - 80:80
-      - 443:443
-      - 8080:8080
+      - 21000:80
+      - 21001:443
+      - 21002:8080
+      - 9122:6379
+    configs:
+      - source: traefik.toml
+        target: /configuration/traefik.toml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ssl:/ssl
@@ -39,6 +44,10 @@ services:
       - traefik.http.services.traefik-public.loadbalancer.server.port=8080
 volumes:
   ssl:
+    external: true
+configs:
+  traefik.toml:
+    external: true
 networks:
   traefik_main:
     external: true
