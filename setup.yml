@@ -5,36 +5,96 @@
   ignore_errors: yes
   tasks:
   # cai dat docker
-    - name: update
-      shell: yum -y update
-    - name: cai device-mapper-persistent-data lvm2
-      shell: yum -y install yum-utils device-mapper-persistent-data lvm2
-    - name: cai repo docker
-      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    - name: cai docker
-      shell: yum -y install docker-ce
-    - name: cai docker-compose
+    - name: Install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: Install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+
+    - name: Install lvm2
+      yum:
+        name: lvm2
+        state: latest
+
+    - name: Add Docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+      become: yes
+
+    - name: Enable Docker Edge repo
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-edge'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Enable Docker Test repo
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-test'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+      become: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+    
+    - name: Insert data to daemon.json
       shell: |
-        curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        chmod +x /usr/local/bin/docker-compose
-        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compos
-    - name: enabled docker
+        printf '{
+           "insecure-registries": [
+             "dockerhub.dttt.vn"
+             ],
+           "data-root":"/root/docker",
+           "log-driver": "json-file",
+           "log-opts": {
+             "max-size": "10m",
+             "max-file": "3"
+           },
+           "metrics-addr": "0.0.0.0:9323"
+        }' > /etc/docker/daemon.json
+        systemctl restart docker
+
+    - name: install python 3
       shell: |
-        systemctl start docker
-        systemctl enable docker
-        systemctl status docker
+        yum -y install python3
+        yum -y install python3-pip git
+        pip3 install --upgrade pip==21.3.1
+   
+    - name: install docker sdk for python
+      shell: |
+        pip install docker
+        pip install docker-compose
+
     - name: Cai dat docker swarm
-      shell: docker swarm init
+      shell: |
+         docker swarm init
+         docker swarm update --task-history-limit 3
+      register: ps
+
+    - debug: var=ps.stdout_lines
     # Mo cac port can thiet
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
       register: ps
 
     - debug: var=ps.stdout_lines
-
-    - name: cai dat git
-      shell: yum -y install git
-      tags: git
         
     - name: set up firewall
       shell: |
@@ -45,32 +105,28 @@
         firewall-cmd --zone=public --add-port=2022/tcp --permanent					
         firewall-cmd --reload
         firewall-cmd --zone=public --list-ports
+        yum -y install net-tools
+        yum -y update
+        sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
+        firewall-cmd --zone=public --list-ports
+        sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
+        setenforce 0
+        systemctl restart sshd
         systemctl restart docker
-    #    yum -y install net-tools
-    #    yum -y update
-    #    sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
-    #    firewall-cmd --zone=public --list-ports
-    #    sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
-    #    setenforce 0
-    #    systemctl restart sshd
-        
-    #  register: ps
-    #
-    #- debug: var=ps.stdout_lines
-    
     # copy file stack infrastructure
     #- name: Copy file stack infrastructure
     #  copy: 
-    #    src: /ansible/setup
+    #    src: /root/setup
     #    dest: /root/
-    #  tags: cp
-    - name: clone infra
-      shell: git clone https://github.com/dangkhoa0797/setup.git
-      tags: clone
+    # dowload file stack
+    - name: dowload file setup
+      shell: |
+        cd ~
+        git clone https://github.com/dangkhoa0797/setup.git
         
-    #- name: pull image 1
-    #  command: docker pull dockerhub.dttt.vn/documentserver:3.0
-    #  tags: im1
+    - name: pull image 1
+      command: docker pull dockerhub.dttt.vn/documentserver:3.0
+      tags: im1
     - name: pull image 2
       shell: docker pull dockerhub.dttt.vn/etcdkeeper:latest
     - name: pull image 3
@@ -81,14 +137,12 @@
     - name: Cai dat Portaier
       shell: |
         docker stack deploy -c /root/setup/portainer.yml portainer
-      tags: portainer
 
     - name: Cai dat traefik
       shell: |
         docker volume create ssl
         docker network create -d overlay traefik_main
         docker stack deploy -c /root/setup/traefik.yml traefik
-      tags: traefik
 
     - name: Tao volume
       shell: |
@@ -112,4 +166,4 @@
     - name: Cai dat infrastructure
       shell: |
         docker stack deploy -c /root/setup/infrastructure.yml infra
-      tags: infra
+        systemctl restart docker
