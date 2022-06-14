@@ -7,10 +7,15 @@
     - variables.yml
   tasks:
     # cai dat cac goi package
-    - name: update all packages
-      shell: |
-        yum install -y epel-release 
-        yum update -y
+    - name: Upgrade all packages
+      yum:
+        name: '*'
+        state: latest
+      tags: update
+    - name: epel-release
+      yum:
+        name: epel-release
+      tags: epel
     - name: Install a list of packages with a list variable
       package:
         name: "{{ packages }}"

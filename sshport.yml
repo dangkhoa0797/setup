@@ -1,0 +1,29 @@
+---
+- hosts: NAME
+  remote_user: root
+  ignore_unreachable: yes
+  ignore_errors: yes
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: set up firewall
+      yum:
+        name:
+          - net-tools
+    - name: Add port to firewalld
+      firewalld:
+        port: 2022/tcp
+        permanent: yes
+        state: enabled
+    - name: change port default
+      shell: sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
+    - name: SELINUX=disabled
+      shell: sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
+    - name: setenforce 0
+      shell:  setenforce 0
+    - name: restart sshd
+      shell:  systemctl restart sshd
+    - name: reload firewall
+      shell: |					
+        firewall-cmd --reload
+        systemctl restart docker
