@@ -55,21 +55,21 @@
         enabled: yes
       become: yes
     
-    - name: Insert data to daemon.json
-      shell: |
-        printf '{
-           "insecure-registries": [
-             "dockerhub.dttt.vn"
-             ],
-           "data-root":"/root/docker",
-           "log-driver": "json-file",
-           "log-opts": {
-             "max-size": "10m",
-             "max-file": "3"
-           },
-           "metrics-addr": "0.0.0.0:9323"
-        }' > /etc/docker/daemon.json
-        systemctl restart docker
+    #- name: Insert data to daemon.json
+    #  shell: |
+    #    printf '{
+    #       "insecure-registries": [
+    #         "dockerhub.dttt.vn"
+    #         ],
+    #       "data-root":"/root/docker",
+    #       "log-driver": "json-file",
+    #       "log-opts": {
+    #         "max-size": "10m",
+    #         "max-file": "3"
+    #       },
+    #       "metrics-addr": "0.0.0.0:9323"
+    #    }' > /etc/docker/daemon.json
+    #    systemctl restart docker
 
     - name: install python 3
       shell: |
@@ -104,29 +104,32 @@
         firewall-cmd --zone=public --add-port=7946/tcp --add-port=9001/tcp --permanent
         firewall-cmd --zone=public --add-port=2022/tcp --permanent					
         firewall-cmd --reload
-        firewall-cmd --zone=public --list-ports
-        yum -y install net-tools
-        yum -y update
-        sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
-        firewall-cmd --zone=public --list-ports
-        sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
-        setenforce 0
-        systemctl restart sshd
         systemctl restart docker
+    #    firewall-cmd --zone=public --list-ports
+    #    yum -y install net-tools
+    #    yum -y update
+    #    sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
+    #    firewall-cmd --zone=public --list-ports
+    #    sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
+    #    setenforce 0
+    #    systemctl restart sshd
+    #    systemctl restart docker
     # copy file stack infrastructure
     #- name: Copy file stack infrastructure
     #  copy: 
     #    src: /root/setup
     #    dest: /root/
     # dowload file stack
-    - name: dowload file setup
-      shell: |
-        cd ~
-        git clone https://github.com/dangkhoa0797/setup.git
-        
-    - name: pull image 1
-      command: docker pull dockerhub.dttt.vn/documentserver:3.0
-      tags: im1
+    - name: Clone a github repository
+      git:
+        repo: https://github.com/dangkhoa0797/setup.git
+        dest: /root/setup
+        clone: yes
+        update: yes
+      tags: git    
+  #  - name: pull image 1
+  #    command: docker pull dockerhub.dttt.vn/documentserver:3.0
+  #    tags: im1
     - name: pull image 2
       shell: docker pull dockerhub.dttt.vn/etcdkeeper:latest
     - name: pull image 3
@@ -136,7 +139,7 @@
 
     - name: Cai dat Portaier
       shell: |
-        docker stack deploy -c /root/setup/portainer.yml portainer
+        docker stack deploy -c /root/setup/portainer-agent-stack.yml portainer
 
     - name: Cai dat traefik
       shell: |

@@ -24,9 +24,6 @@ services:
       - 21001:443
       - 21002:8080
       - 9122:6379
-    configs:
-      - source: traefik.toml
-        target: /configuration/traefik.toml
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ssl:/ssl
@@ -44,9 +41,6 @@ services:
       - traefik.http.services.traefik-public.loadbalancer.server.port=8080
 volumes:
   ssl:
-    external: true
-configs:
-  traefik.toml:
     external: true
 networks:
   traefik_main:
