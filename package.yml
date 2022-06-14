@@ -26,9 +26,8 @@
           - htop
           - telnet
           - wget
-          - curl
-          - cockpit
           - net-tools
+#          - cockpit
 #          - nload
 #          - openssh
 #          - openssh-server
@@ -46,7 +45,7 @@
 #        name: sshd
 #        state: started
 #    
-#    - name: Start chronyd service
-#      service:
-#        name: chronyd
-#        state: started
+    - name: Restart service docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted

@@ -28,14 +28,27 @@
       shell: sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
     - name: setenforce 0
       shell:  setenforce 0
-    - name: restart sshd
-      shell:  systemctl restart sshd
+#    - name: restart sshd
+#      shell:  systemctl restart sshd
+    - name: Restart service sshd, in all cases
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
     - name: reload firewall
-      shell: |					
-        firewall-cmd --reload
-        systemctl restart docker
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+    - name: Restart service docker, in all cases
+      ansible.builtin.service:
+        name: docker
+        state: restarted
     - name: check port ssh
       shell: netstat -ltnp | grep ssh
       register: check 
 
     - debug: var=check.stdout_lines
+
+    #- name: reload service firewalld
+    #  systemd:
+    #    name: firewalld
+    #    state: reloaded

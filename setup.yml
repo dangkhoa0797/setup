@@ -83,8 +83,12 @@
            "metrics-addr": "0.0.0.0:9323"
         }' > /etc/docker/daemon.json
       tags: daemon
-    - name: restart daemon
-      command: systemctl restart docker
+#    - name: restart daemon
+#      command: systemctl restart docker
+    - name: Restart service docker, in all cases
+      ansible.builtin.service:
+        name: docker
+        state: restarted
     - name: Cai dat docker swarm
       shell: docker swarm init
     - name: swarm update
@@ -106,10 +110,17 @@
         - 7946/tcp
         - 2022/tcp
         - 9001/tcp        
-    - name: set up firewall
-      shell: |					
-        firewall-cmd --reload
-        systemctl restart docker
+#    - name: set up firewall
+#        firewall-cmd --reload
+#        systemctl restart docker
+    - name: reload firewall
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+    - name: Restart service docker, in all cases
+      ansible.builtin.service:
+        name: docker
+        state: restarted
 
     - name: Clone a github repository
       git:
