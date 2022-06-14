@@ -54,22 +54,6 @@
         state: started
         enabled: yes
       become: yes
-    
-    #- name: Insert data to daemon.json
-    #  shell: |
-    #    printf '{
-    #       "insecure-registries": [
-    #         "dockerhub.dttt.vn"
-    #         ],
-    #       "data-root":"/root/docker",
-    #       "log-driver": "json-file",
-    #       "log-opts": {
-    #         "max-size": "10m",
-    #         "max-file": "3"
-    #       },
-    #       "metrics-addr": "0.0.0.0:9323"
-    #    }' > /etc/docker/daemon.json
-    #    systemctl restart docker
 
     - name: install python 3
       yum:
@@ -92,7 +76,23 @@
       register: ps
 
     - debug: var=ps.stdout_lines
-    # Mo cac port can thiet
+    - name: Insert data to daemon.json
+      shell: |
+        printf '{
+           "insecure-registries": [
+             "dockerhub.dttt.vn"
+             ],
+           "data-root":"/home/docker",
+           "log-driver": "json-file",
+           "log-opts": {
+             "max-size": "10m",
+             "max-file": "3"
+           },
+           "metrics-addr": "0.0.0.0:9323"
+        }' > /etc/docker/daemon.json
+      tags: daemon
+    - name: restart daemon
+      command: systemctl restart docker
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
       register: ps
