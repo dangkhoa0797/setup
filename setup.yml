@@ -68,14 +68,6 @@
       shell: |
         pip install docker
         pip install docker-compose
-
-    - name: Cai dat docker swarm
-      shell: |
-         docker swarm init
-         docker swarm update --task-history-limit 3
-      register: ps
-
-    - debug: var=ps.stdout_lines
     - name: Insert data to daemon.json
       shell: |
         printf '{
@@ -93,6 +85,10 @@
       tags: daemon
     - name: restart daemon
       command: systemctl restart docker
+    - name: Cai dat docker swarm
+      shell: docker swarm init
+    - name: swarm update
+      shell: docker swarm update --task-history-limit 3
     - name: login dockerhub.dttt.vn
       shell: docker login dockerhub.dttt.vn -u="admin" -p="Trinam@2019"
       register: ps
