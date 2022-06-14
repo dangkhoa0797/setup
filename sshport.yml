@@ -34,3 +34,6 @@
         cat /etc/selinux/config | grep SELINUX
         netstat -ltnp | grep -w ':22'
         netstat -ltnp | grep -w ':2022'
+      register: check
+
+    - debug: var=check.stdout_lines
