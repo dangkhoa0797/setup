@@ -27,3 +27,10 @@
       shell: |					
         firewall-cmd --reload
         systemctl restart docker
+    - name: check
+      shell: |
+        firewall-cmd --zone=public --list-ports
+        cat /etc/ssh/sshd_config | grep Port
+        cat /etc/selinux/config | grep SELINUX
+        netstat -ltnp | grep -w ':22'
+        netstat -ltnp | grep -w ':2022'
