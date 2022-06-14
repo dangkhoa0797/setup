@@ -68,6 +68,7 @@
       shell: |
         pip install docker
         pip install docker-compose
+
     - name: Insert data to daemon.json
       shell: |
         printf '{
@@ -89,6 +90,7 @@
       ansible.builtin.service:
         name: docker
         state: restarted
+
     - name: Cai dat docker swarm
       shell: docker swarm init
     - name: swarm update
@@ -98,6 +100,7 @@
       register: ps
 
     - debug: var=ps.stdout_lines
+    
     - name: Add port to firewalld
       firewalld:
         port: "{{ item }}"

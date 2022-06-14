@@ -26,25 +26,7 @@
           - htop
           - telnet
           - wget
-          - net-tools
-#          - cockpit
-#          - nload
-#          - openssh
-#          - openssh-server
-#          - openssh-clients
-#          - openssl-libs
-#          - chrony
-#
-#    - name: Start cockpit service
-#      service:
-#        name: cockpit
-#        state: started
-#    
-#    - name: Start sshd service
-#      service:
-#        name: sshd
-#        state: started
-#    
+          - net-tools   
     - name: Restart service docker
       ansible.builtin.service:
         name: docker
