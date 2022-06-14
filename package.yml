@@ -16,14 +16,14 @@
         name: "{{ packages }}"
         state: present
         update_cache: yes
-#      vars:
-#        packages:
-#          - htop
-#          - telnet
-#          - wget
-#          - curl
-#          - cockpit
-#          - net-tools
+      vars:
+        packages:
+          - htop
+          - telnet
+          - wget
+          - curl
+          - cockpit
+          - net-tools
 #          - nload
 #          - openssh
 #          - openssh-server
