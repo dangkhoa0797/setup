@@ -6,6 +6,11 @@
   vars_files:
     - variables.yml
   tasks:
+    - name: check port ssh
+      shell: netstat -ltnp | grep ssh
+      register: check 
+
+    - debug: var=check.stdout_lines
     - name: set up firewall
       yum:
         name:
@@ -16,7 +21,9 @@
         permanent: yes
         state: enabled
     - name: change port default
-      shell: sed -i "s,#Port 22,Port 2022," /etc/ssh/sshd_config
+      shell: sed -i "s,^#Port .*,Port 2022," /etc/ssh/sshd_config
+    - name: change port default
+      shell: sed -i "s,^Port .*,Port 2022," /etc/ssh/sshd_config
     - name: SELINUX=disabled
       shell: sed -i "s,SELINUX=.*,SELINUX=disabled," /etc/selinux/config
     - name: setenforce 0
@@ -27,13 +34,8 @@
       shell: |					
         firewall-cmd --reload
         systemctl restart docker
-    - name: check
-      shell: |
-        firewall-cmd --zone=public --list-ports
-        cat /etc/ssh/sshd_config | grep Port
-        cat /etc/selinux/config | grep SELINUX
-        netstat -ltnp | grep -w ':22'
-        netstat -ltnp | grep -w ':2022'
-      register: check
+    - name: check port ssh
+      shell: netstat -ltnp | grep ssh
+      register: check 
 
     - debug: var=check.stdout_lines
