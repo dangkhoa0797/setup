@@ -55,16 +55,16 @@
         enabled: yes
       become: yes
 
-    - name: install python 3
+    - name: install git pip
       yum:
         name:
           - python3
           - python3-pip
           - git
-    - name: install python 3
+    - name: Upgrade pip
       shell: pip3 install --upgrade pip==21.3.1
    
-    - name: install docker sdk for python
+    - name: install docker sdk
       shell: |
         pip install docker
         pip install docker-compose
