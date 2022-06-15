@@ -4,7 +4,7 @@ docker volume create idrsa
 docker run --rm -it -v ansible:/ansible -v idrsa:/root/id_rsa willhallonline/ansible:latest //bin//sh
 docker exec -it musing_moser //bin//sh
 
--keygen
+ssh-keygen
 ssh-keygen -R $IP    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
 mv /etc/ansible/hosts /etc/ansible/hosts.org
 vi /etc/ansible/hosts
