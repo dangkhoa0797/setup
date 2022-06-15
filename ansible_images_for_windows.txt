@@ -1,8 +1,10 @@
+
 docker volume create ansible
 docker volume create idrsa
 docker run --rm -it -v ansible:/ansible -v idrsa:/root/id_rsa willhallonline/ansible:latest //bin//sh
 docker exec -it musing_moser //bin//sh
-ssh-keygen
+
+-keygen
 ssh-keygen -R $IP    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
 mv /etc/ansible/hosts /etc/ansible/hosts.org
 vi /etc/ansible/hosts
@@ -25,21 +27,19 @@ sed -i "s,NAME,$NAME," package.yml
 sed -i "s,NAME,$NAME," setup.yml
 sed -i "s,NAME,$NAME," sshport.yml
 head -3 setup.yml
+
 ansible-playbook package.yml
 ansible-playbook setup.yml
 ansible-playbook sshport.yml
+
 sed -i "s,$NAME,NAME," package.yml
 sed -i "s,$NAME,NAME," setup.yml
 printf $NAME
 
 --tags all- chạy tất cả các tác vụ, bỏ qua các thẻ (hành vi mặc định)
-
 --tags [tag1, tag2]- chỉ chạy các tác vụ có thẻ tag1hoặc thẻtag2
-
 --skip-tags [tag3, tag4]- chạy tất cả các tác vụ ngoại trừ những tác vụ có thẻ tag3hoặc thẻtag4
-
 --tags tagged- chỉ chạy các tác vụ với ít nhất một thẻ
-
 --tags untagged- chỉ chạy các tác vụ không có thẻ
 
 ansible-playbook example.yml --tags "configuration,packages"
