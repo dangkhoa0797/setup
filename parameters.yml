@@ -1,0 +1,21 @@
+---
+- hosts: NAME
+  remote_user: root
+  ignore_unreachable: yes
+  ignore_errors: yes
+  vars_files:
+    - variables.yml
+  tasks:
+  # Config limit parameters
+    - name: soft
+      shell: echo "*    soft    nofile 819200" >>/etc/security/limits.conf
+    - name: hard
+      shell: echo "*    hard    nofile 819200" >>/etc/security/limits.conf
+    - name: touch
+      shell: touch /etc/security/limits.conf
+    - name: file-max
+      shell: echo "fs.file-max = 200000" >>/etc/sysctl.conf
+    - name: inotify.max_user_watches
+      shell: echo "fs.inotify.max_user_watches = 2048576" >>/etc/sysctl.conf
+    - name: inotify.max_user_instances
+      shell: echo "fs.inotify.max_user_instances = 524288" >>/etc/sysctl.conf
