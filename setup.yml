@@ -75,7 +75,7 @@
            "insecure-registries": [
              "dockerhub.dttt.vn"
              ],
-           "data-root":"/home/docker",
+           "data-root":"/FILEDR/docker",
            "log-driver": "json-file",
            "log-opts": {
              "max-size": "10m",
@@ -127,7 +127,7 @@
 
     - name: Clone a github repository
       git:
-        repo: https://github.com/dangkhoa0797/setup.git
+        repo: https://git.dttt.vn/gitadmin/ansible.git
         dest: /root/setup
         clone: yes
         update: yes
