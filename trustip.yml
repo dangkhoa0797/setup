@@ -1,0 +1,15 @@
+---
+- hosts: NAME
+  remote_user: root
+  ignore_unreachable: yes
+  ignore_errors: yes
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: remove old service
+      shell: firewall-cmd --zone=public --remove-service=ssh --permanent
+    - name: setup new rules
+      shell: |
+        firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="192.168.235.154" port protocol="tcp" port="22" accept'
+    - name: reload firewall
+      shell: firewall-cmd --reload
