@@ -30,21 +30,11 @@ printf $NAME' ansible_host='$IP' ansible_port=22 ansible_user=root\n' >> /etc/an
 printf $NAME' ansible_host='$IP' ansible_port=2022 ansible_user=root\n' >> /etc/ansible/hosts
 cat /etc/ansible/hosts
 
-6. Chèn thông tin setup vào file playbook
-sed -i "s,NAME,$NAME," package.yml
+6. chạy playbook
+ansible-playbook package.yml -e hname=$NAME
 sed -i "s,FILEDR,$FILEDR," setup.yml
-sed -i "s,NAME,$NAME," setup.yml
-sed -i "s,NAME,$NAME," sshport.yml
-head -3 setup.yml
-
-7. chạy playbook
-ansible-playbook package.yml
-ansible-playbook setup.yml
-ansible-playbook sshport.yml
-
-sed -i "s,$NAME,NAME," package.yml
-sed -i "s,$NAME,NAME," setup.yml
-printf $NAME
+ansible-playbook setup.yml -e hname=$NAME
+ansible-playbook parameters.yml -e hname=$NAME
 
 --tags all- chạy tất cả các tác vụ, bỏ qua các thẻ (hành vi mặc định)
 --tags [tag1, tag2]- chỉ chạy các tác vụ có thẻ tag1hoặc thẻtag2
@@ -54,4 +44,4 @@ printf $NAME
 
 ansible-playbook example.yml --tags "configuration,packages"
 ansible-playbook example.yml --skip-tags "packages"
-
+ansible-playbook -vvv setup.yml xem thêm thông tin kết quả

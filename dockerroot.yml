@@ -1,5 +1,5 @@
 ---
-- hosts: NAME
+- hosts: "{{ hname }}"
   remote_user: root
   ignore_unreachable: yes
   ignore_errors: yes
@@ -10,7 +10,7 @@
            "insecure-registries": [
              "dockerhub.dttt.vn"
              ],
-           "data-root":"/FILEDR/docker",
+           "data-root":"/"{{ filedr }}"/docker",
            "log-driver": "json-file",
            "log-opts": {
              "max-size": "10m",

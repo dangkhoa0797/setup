@@ -1,5 +1,5 @@
 ---
-- hosts: NAME
+- hosts: "{{ hname }}"
   remote_user: root
   ignore_unreachable: yes
   ignore_errors: yes
