@@ -3,6 +3,8 @@
   remote_user: root
   ignore_unreachable: yes
   ignore_errors: yes
+  vars_files:
+    - variables.yml
   tasks:
   # cai dat docker
     - name: Install yum utils
@@ -127,7 +129,7 @@
 
     - name: Clone a github repository
       git:
-        repo: https://git.dttt.vn/gitadmin/ansible.git
+        repo: "https://{{ username | urlencode }}:{{ password | urlencode }}@git.dttt.vn/gitadmin/ansible.git"
         dest: /root/setup
         clone: yes
         update: yes

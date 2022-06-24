@@ -14,3 +14,4 @@
         firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="192.168.235.154" port protocol="tcp" port="22" accept'
     - name: reload firewall
       shell: firewall-cmd --reload
+      #firewall-cmd --zone=public --list-all

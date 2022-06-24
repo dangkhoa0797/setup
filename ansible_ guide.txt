@@ -20,8 +20,8 @@ hostname -I
 cat /etc/*release
 
 4. Nhập các thông tin cần thiết cho việc setup server
-NAME=centos7.1
-IP=192.168.253.161
+NAME=ubuntu2
+IP=192.168.253.166
 FILEDR=home         # thư mục chứa docker
 ssh-copy-id root@$IP
 
@@ -35,6 +35,7 @@ ansible-playbook package.yml -e hname=$NAME
 sed -i "s,FILEDR,$FILEDR," setup.yml
 ansible-playbook setup.yml -e hname=$NAME
 ansible-playbook parameters.yml -e hname=$NAME
+ansible-playbook worker.yml -e "hname=centos7.1 token=SWMTKN-1-1xzabnpf3huupzn4dqsaosisz7jlrcaywi2slnyquqzsy5mn4j-563inpuxdhndpob86wqkdai2s ip=192.168.253.154:2377"
 
 --tags all- chạy tất cả các tác vụ, bỏ qua các thẻ (hành vi mặc định)
 --tags [tag1, tag2]- chỉ chạy các tác vụ có thẻ tag1hoặc thẻtag2

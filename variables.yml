@@ -24,3 +24,5 @@ volumes:
   - sqlserver_data
 networks:
 configs:
+username: khoahd
+password: dangkhoabro9x
