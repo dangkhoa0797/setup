@@ -5,7 +5,7 @@ yum -y install ansible
 docker volume create ansible
 docker volume create idrsa
 docker run --rm -it -v ansible:/ansible -v idrsa:/root/id_rsa willhallonline/ansible:latest //bin//sh
-docker exec -it musing_moser //bin//sh
+docker exec -it ansible //bin//sh
 
 2. Cấu hình Ansible
 ssh-keygen
@@ -20,14 +20,14 @@ hostname -I
 cat /etc/*release
 
 4. Nhập các thông tin cần thiết cho việc setup server
-NAME=ubuntu2
-IP=192.168.253.166
+NAME=ubuntu3
+IP=192.168.253.167
 FILEDR=home         # thư mục chứa docker
 ssh-copy-id root@$IP
 
 5. Đăng ký client
-printf $NAME' ansible_host='$IP' ansible_port=22 ansible_user=root\n' >> /etc/ansible/hosts
-printf $NAME' ansible_host='$IP' ansible_port=2022 ansible_user=root\n' >> /etc/ansible/hosts
+printf '\n'$NAME' ansible_host='$IP' ansible_port=22 ansible_user=root' >> /etc/ansible/hosts
+ansible_host='IP' ansible_port=22 ansible_user=root
 cat /etc/ansible/hosts
 
 6. chạy playbook
@@ -37,7 +37,7 @@ ansible-playbook package.yml -e hname=$NAME
 sed -i "s,FILEDR,$FILEDR," cmanager.yml
 ansible-playbook cmanager.yml -e hname=$NAME
 
-ansible-playbook cworker.yml -e "hname=centos7.1 token= ip=192.168.253.154:2377"
+ansible-playbook cworker.yml -e "hname=centos7.1 token= ipmanager=192.168.253.167:2377 ipworker=192.168.253.166"
 
 
 
@@ -52,3 +52,6 @@ ansible-playbook cworker.yml -e "hname=centos7.1 token= ip=192.168.253.154:2377"
 ansible-playbook example.yml --tags "configuration,packages"
 ansible-playbook example.yml --skip-tags "packages"
 ansible-playbook -vvv setup.yml xem thêm thông tin kết quả
+
+
+
