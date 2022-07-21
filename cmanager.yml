@@ -204,6 +204,12 @@
         docker volume create rabbitmq_data
         docker volume create etcd_data
         docker volume create sqlserver_data
+
+    - name: dang ky portainer
+      shell: |
+        http POST :9000/api/users/admin/init Username="admin" Password="dangkhoabro9x"
+        http POST :9000/api/auth Username="admin" Password="dangkhoabro9x"
+      tags: dkp
         
      # tao net work   
     - name: Tao network
